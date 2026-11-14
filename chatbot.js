@@ -17,21 +17,11 @@
     return;
   }
 
-  // When the script is served from a CDN (e.g. jsDelivr) the script URL no
-  // longer points at the ChatPro app, so the API base must be given
-  // explicitly via data-api-url. Fail loudly instead of silently calling
-  // the CDN host.
-  var cdnHosted = !script.src || new URL(script.src).host !== location.host;
-  var explicitBase = script.getAttribute('data-api-url');
-  if (!explicitBase && cdnHosted) {
-    console.error(
-      '[ChatPro] The widget script is loaded from a CDN. Add data-api-url="' +
-        location.origin + '" to the <script> tag so the widget can reach the ChatPro API.'
-    );
-    return;
-  }
+  // Built-in production API base. The data-api-url attribute on the script
+  // tag overrides this (e.g. for local development against 127.0.0.1).
+  var DEFAULT_API_URL = 'https://webdesignbd.click';
 
-  var baseUrl = explicitBase || new URL(script.src).origin;
+  var baseUrl = script.getAttribute('data-api-url') || DEFAULT_API_URL;
 
   var STATE = {
     config: null,
